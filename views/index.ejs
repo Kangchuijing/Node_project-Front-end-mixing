@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>
+    <%= title %>
+  </title>
+  <link rel='stylesheet' href='/bootstrap/css/bootstrap.min.css' />
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/common.css">
+</head>
+
+<body>
+  <div class="container">
+    <%- include('header') %>
+      <div class="main">
+        <%- include('menu') %>
+          <div class="data">
+            <%- include('form') %>
+              <div class="table">
+                <table class="table table-hover">
+                  <thead>
+                    <tr class="bg-info">
+                      <th>
+                        <input type="checkbox">全选
+                      </th>
+                      <th>First Name</th>
+                      <th>Last Name</th>
+                      <th>Username</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">
+                        <input type="checkbox"> 1</th>
+                      <td>Mark</td>
+                      <td>Otto</td>
+                      <td>@mdo</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        <input type="checkbox" name="" id=""> 2</th>
+                      <td>Jacob</td>
+                      <td>Thornton</td>
+                      <td>@fat</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        <input type="checkbox" name="" id=""> 3</th>
+                      <td>Larry</td>
+                      <td>the Bird</td>
+                      <td>@twitter</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <%- include('button') %>
+          </div>
+      </div>
+      <div class="footer ">我是尾部</div>
+  </div>
+  <script src="/js/common.js"></script>
+</body>
+
+</html>
