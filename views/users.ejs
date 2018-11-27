@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        <%= title %>
+    </title>
+    <link rel='stylesheet' href='/bootstrap/css/bootstrap.min.css' />
+    <link rel="stylesheet" href="/css/reset.css">
+    <link rel="stylesheet" href="/css/common.css">
+</head>
+
+<body>
+    <div class="container">
+        <%- include('./common/header') %>
+            <div class="main">
+                <%- include('./common/menu') %>
+                    <div class="data">
+                        <%- include('./common/form') %>
+                            <div class="table">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr class="bg-info">
+                                            <th>
+                                                <input type="checkbox">全选
+                                            </th>
+                                            <th>姓名</th>
+                                            <th>昵称</th>
+                                            <th>管理员</th>
+                                            <th>权限</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <%  for(var i = 0 ; i < data.length; i++)  {%>
+                                            <tr>
+                                                <th scope="row">
+                                                    <input type="checkbox">
+                                                    <%= i+1 %>
+                                                </th>
+                                                <td>
+                                                    <%= data[i].name %>
+                                                </td>
+                                                <td>
+                                                    <%= data[i].nickname %>
+                                                </td>
+                                                <td>
+                                                    <%= data[i].isAdmin %>
+                                                </td>
+                                                <% if(data[i].power === 'over-max') {%>
+                                                    <td>
+                                                        <%= data[i].power %>(最高权限)
+                                                    </td>
+                                                    <%} else { %>
+                                                        <td>
+                                                            <%= data[i].power %>
+                                                        </td>
+                                                        <%} %>
+                                                            <% if(!data[i].isAdmin)  { %>
+                                                                <td>
+                                                                    <a href="/users/delete?id=<%= data[i]._id %>">删除</a>
+                                                                </td>
+                                                                <%}%>
+                                            </tr>
+                                            <%} %>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <%- include('./common/button') %>
+                    </div>
+            </div>
+            <div class="footer ">我是尾部</div>
+    </div>
+    <script></script>
+    <script src="/js/common.js"></script>
+</body>
+
+</html>

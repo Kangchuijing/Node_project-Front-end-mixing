@@ -12,11 +12,11 @@
 
 <body>
   <div class="container">
-    <%- include('header') %>
+    <%- include('./common/header') %>
       <div class="main">
-        <%- include('menu') %>
+        <%- include('./common/menu') %>
           <div class="data">
-            <%- include('form') %>
+            <%- include('./common/form') %>
               <div class="table">
                 <table class="table table-hover">
                   <thead>
@@ -54,11 +54,12 @@
                   </tbody>
                 </table>
               </div>
-              <%- include('button') %>
+              <%- include('./common/button') %>
           </div>
       </div>
       <div class="footer ">我是尾部</div>
   </div>
+  <script></script>
   <script src="/js/common.js"></script>
 </body>
 
