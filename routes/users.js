@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var async = require('async');
 var MongoClient = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectId;
 var url = 'mongodb://127.0.0.1:27017';
@@ -100,7 +101,7 @@ router.post('/login', function (req, res, next) {
       } else { //登录成功
         console.log('登录成功');
         res.cookie('nickname', data[0].nickname, { maxAge: 6 * 1000 * 60 });  //设置cookie有效期为6分钟
-        res.redirect('/users');
+        res.redirect('/');
       }
     });
     client.close();
@@ -109,7 +110,73 @@ router.post('/login', function (req, res, next) {
 
 // 用户注册页面
 // localhost:3000/users/regesit
-router.get('/regesit', function (req, res, next) {
-  res.render('regesit', { error: "" });
+router.post('/regesit', function (req, res, next) {
+  // 这里可以直接获取请求体中的数据，因为已经导入了相应的中间件进行处理了
+  var user = req.body.user;
+  var password = req.body.password;
+  var nickname = req.body.nickname;
+  var sex = req.body.sex;
+  var isAdmin = req.body.isAdmin;
+  var power = req.body.power;
+  // 这里使用异步流程控制来解决异步问题
+  MongoClient.connect(url, { useNewUrlParser: true }, function (error, client) {
+    if (error) {
+      console.log('数据库连接失败');
+      res.render('error', {
+        message: '数据库连接失败',
+        error: error
+      });
+    }
+    else {
+      var db = client.db('project');
+      async.series([
+        function (cb) {
+          //首先应该到数据库中查询是否该用户名已经注册
+          db.collection('users').find({
+            name: user
+          }).toArray(function (error, data) {
+            if (error) {
+              console.log('数据库查询出错');
+              cb('数据库查询出错');
+            } else if (data.length > 0) {
+              console.log(data);
+              console.log('该用户名已经注册，请换一个再来尝试');
+              cb(new Error('用户名已经存在，请换一个用户名再来尝试'));
+
+            } else {
+              console.log('数据查询成功');
+              cb(null);
+            }
+          });
+        },
+        function (cb) {
+          db.collection('users').insertOne({
+            name: user,
+            nickname: nickname,
+            password: password,
+            sex: sex,
+            isAdmin: isAdmin === '是' ? true : false,
+            power: power
+          }, function (error) {
+            if (error) {
+              cb(error);
+            } else {
+              console.log('数据插入成功');
+              cb(null);
+            }
+          })
+        }
+      ], function (error, result) {
+        if (error) {
+          res.render('error', {
+            message: '出现了一些小问题',
+            error: error
+          });
+        } else {  // 如果注册成功，那么就重定向至登陆页面
+          res.redirect('/login.html');
+        }
+      });
+    }
+  })
 });
 module.exports = router;
