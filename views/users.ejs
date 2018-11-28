@@ -36,7 +36,7 @@
                                             <tr>
                                                 <th scope="row">
                                                     <input type="checkbox">
-                                                    <%= i+1 %>
+                                                    <%= (currentPage-1)*pageSize+(i+1) %>
                                                 </th>
                                                 <td>
                                                     <%= data[i].name %>

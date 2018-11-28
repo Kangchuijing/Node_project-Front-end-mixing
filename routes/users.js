@@ -9,6 +9,10 @@ var url = 'mongodb://127.0.0.1:27017';
 // 用户信息页面
 // localhost:3000/users/
 router.get('/', function (req, res, next) {
+  //分页操作
+  var page = parseInt(req.query.page) || 1;
+  var pageSize = parseInt(pageSize) || 4;
+  var totalSize = 0;
   MongoClient.connect(url, { useNewUrlParser: true }, function (error, client) {
     if (error) {
       console.log("数据库连接失败");
@@ -21,24 +25,61 @@ router.get('/', function (req, res, next) {
     //选择我们要连接的数据库
     var db = client.db('project');
     //对collection进行操作
-    db.collection('users').find().toArray(function (error, data) {
-      if (error) {
-        console.log('数据查询失败');
-        res.redirect('error', {
-          message: '数据库连接失败',
-          error: error
+    // 使用异步流程控制对数据进行分页操作
+    // 1、查询数据的总条数
+    async.series([
+      function (cb) {
+        db.collection('users').find().count(function (error, data) {
+          if (error) {
+            console.log('用户信息条数查询失败');
+            cb(error);
+          } else {
+            totalSize = data;
+            cb(null);
+          }
+        })
+      },
+      function (cb) {
+        // 2、查询每页的数据 
+        db.collection('users').find().limit(pageSize).skip(pageSize * (page - 1)).toArray(function (error, data) {
+          if (error) {
+            console.log('数据查询失败');
+            cb(error);
+          }
+          else {
+            console.log('数据查询成功');
+            cb(null, data);
+          }
         });
-        return;
       }
-      console.log('数据查询成功');
-      //如果查到了数据，就去渲染users这个页面
-      res.render('users', { title: '后台管理-用户管理', data: data });
-      //关闭数据库的连接
-      client.close();
-    });
+    ],
+      function (error, result) {
+        if (error) {
+          console.log('异步执行失败');
+          res.render('error', {
+            message: '数据查询出错',
+            error: error
+          });
+        } else {
+
+          //如果查到了数据，就去渲染users这个页面
+          var totalPage = Math.ceil(totalSize / pageSize);  // 计算总的页数，向上取整
+          console.log('当前页是', page, '总页数是', totalPage);
+          res.render('users', {
+            title: '后台管理-用户管理',
+            data: result[1],
+            currentPage: page,
+            pageSize: pageSize,
+            totalSize: totalSize,
+            totalPage: totalPage
+          });
+          //关闭数据库的连接
+          client.close();
+        }
+      });
+
   });
 });
-
 // 用户信息删除页面
 // localhost:3000/users/delete
 router.get('/delete', function (req, res, next) {

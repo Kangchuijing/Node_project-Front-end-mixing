@@ -1,11 +1,19 @@
 <div class="button">
     <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
         <div class="btn-group" role="group" aria-label="First group">
-            <button type="button" class="btn btn-default">1</button>
-            <button type="button" class="btn btn-default">2</button>
-            <button type="button" class="btn btn-default">3</button>
-            <button type="button" class="btn btn-default">4</button>
-            <button type="button" class="btn btn-default">...</button>
+            <button type="button" class="btn btn-default">
+                <a href="/users?page=<%= currentPage-1 < 1?1:currentPage-1 %>">...</a>
+            </button>
+            <% for(var i = 0 ; i < totalPage; i++) {%>
+                <button type="button" class="btn btn-default <%= currentPage == (i+1) ? 'active' : '' %>">
+                    <a href="/users?page=<%= i+1 %>">
+                        <%= i+1 %>
+                    </a>
+                </button>
+                <%}%>
+                    <button type="button" class="btn btn-default">
+                        <a href="/users?page=<%= currentPage + 1 > totalPage ? totalPage : currentPage + 1 %>">...</a>
+                    </button>
         </div>
     </div>
 </div>
